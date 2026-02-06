@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.UUID;
 
 @Repository
 public class ProductRepository {
@@ -21,7 +22,7 @@ public class ProductRepository {
         Iterator<Product> it = productData.iterator();
         while (it.hasNext()) {
             Product p = it.next();
-            if (p.getProductId().equals(product.getProductId())) {
+            if (p.getProductId() != null && p.getProductId().equals(product.getProductId())) {
                 it.remove();
                 return p;
             }
@@ -29,9 +30,10 @@ public class ProductRepository {
         return null;
     }
 
-    public Product findProductById(String productId) {
+    public Product findProductById(UUID productId) {
+        if (productId == null) return null;
         for (Product product : productData) {
-            if (product.getProductId().equals(productId)) {
+            if (product.getProductId() != null && product.getProductId().equals(productId)) {
                 return product;
             }
         }
@@ -42,7 +44,7 @@ public class ProductRepository {
         if (product == null || product.getProductId() == null) return null;
         for (int i = 0; i < productData.size(); i++) {
             Product p = productData.get(i);
-            if (p.getProductId().equals(product.getProductId())) {
+            if (p.getProductId() != null && p.getProductId().equals(product.getProductId())) {
                 productData.set(i, product);
                 return product;
             }
