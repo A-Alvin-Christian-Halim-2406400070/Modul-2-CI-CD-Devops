@@ -9,7 +9,7 @@
 
 <div class="container my-2">
     <h2>Product List</h2>
-    <a th:href="@{/product/create}" class="btn btn-primary btn-sm mb-3">Create Product</a>
+    <a id="createProductButton" th:href="@{/product/create}" class="btn btn-primary btn-sm mb-3">Create Product</a>
 
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
@@ -26,7 +26,7 @@
             <td th:text="${product.productName}"></td>
             <td th:text="${product.productQuantity}"></td>
             <td>
-                <a th:href="@{/product/edit(id=${product.productId})}" class="btn btn-secondary btn-sm mr-1">Edit</a>
+                <a th:href="@{/product/edit(id=${product.productId})}" th:id="'edit-btn-' + ${product.productId}" class="btn btn-secondary btn-sm mr-1">Edit</a>
                 <form th:action="@{/product/delete}" method="post" style="display:inline;" onsubmit="return confirm('Delete this product?');">
                     <input type="hidden" name="id" th:value="${product.productId}" />
                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
