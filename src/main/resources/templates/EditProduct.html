@@ -20,9 +20,9 @@
         <div class="form-group">
             <label for="quantityInput">Quantity</label>
             <input name="productQuantity" th:value="${productQuantityRaw} ?: ${product.productQuantity}" type="text" class="form-control mb-4 col-4" id="quantityInput">
-            <div th:if="${errors != null and errors.containsKey('productQuantity')}" class="error-text" th:text="${errors.get('productQuantity')}"></div>
+            <div th:if="${errors != null and errors.containsKey('productQuantity')}" class="error-text" id="quantityError" th:text="${errors.get('productQuantity')}"></div>
         </div>
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" id="submitButton" class="btn btn-primary">Save</button>
     </form>
 </div>
 
