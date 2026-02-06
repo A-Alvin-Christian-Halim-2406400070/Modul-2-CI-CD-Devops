@@ -41,4 +41,15 @@ class HomePageFunctionalTest {
         assertEquals("Welcome", welcomeMessage);
     }
 
+    @Test
+    void viewProductsButton_exists_hasCorrectText_and_redirectsToProductListPage(ChromeDriver driver) throws Exception {
+        driver.get(baseUrl + "/");
+        String buttonText = driver.findElement(By.id("viewProductsButton")).getText();
+        assertEquals("View Products", buttonText);
+
+        driver.findElement(By.id("viewProductsButton")).click();
+        String currentUrl = driver.getCurrentUrl();
+        assertEquals(baseUrl + "/product/list", currentUrl);
+    }
+
 }
