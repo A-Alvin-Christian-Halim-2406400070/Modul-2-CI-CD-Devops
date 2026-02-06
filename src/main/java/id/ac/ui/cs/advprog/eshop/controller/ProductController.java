@@ -28,6 +28,24 @@ public class ProductController {
         return "redirect:/product/list";
     }
 
+    // Show edit page by reusing the CreateProduct template. Expects ?id=... as query param.
+    @GetMapping("/edit")
+    public String editProductPage(@RequestParam("id") String id, Model model) {
+        Product product = service.findById(id);
+        if (product == null) {
+            // If product not found, redirect back to list (could add flash message in future)
+            return "redirect:/product/list";
+        }
+        model.addAttribute("product", product);
+        return "EditProduct"; // return dedicated edit template
+    }
+
+    @PostMapping("/edit")
+    public String editProduct(@ModelAttribute Product product) {
+        service.update(product);
+        return "redirect:/product/list";
+    }
+
     // Accept id as a form parameter to avoid relying on path variable rendering
     @PostMapping("/delete")
     public String deleteProduct(@RequestParam("id") String id) {
