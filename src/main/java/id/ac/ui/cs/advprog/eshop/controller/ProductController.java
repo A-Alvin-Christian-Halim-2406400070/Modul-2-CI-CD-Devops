@@ -19,19 +19,35 @@ public class ProductController {
     public String createProductPage(Model model) {
         Product product = new Product();
         model.addAttribute("product", product);
-        return "createProduct";
+        return "CreateProduct";
     }
 
     @PostMapping("/create")
-    public String createProduct(@ModelAttribute Product product, Model model) {
+    public String createProduct(@ModelAttribute Product product) {
         service.create(product);
-        return "redirect:list";
+        return "redirect:/product/list";
+    }
+
+    // Accept id as a form parameter to avoid relying on path variable rendering
+    @PostMapping("/delete")
+    public String deleteProduct(@RequestParam("id") String id) {
+        System.out.println("[ProductController] deleteProduct called with id=" + id);
+        if (id != null && !id.isEmpty()) {
+            Product deletedProduct = service.findById(id);
+            if (deletedProduct != null) {
+                service.delete(deletedProduct);
+                System.out.println("[ProductController] deleted product id=" + id);
+            } else {
+                System.out.println("[ProductController] product not found for id=" + id);
+            }
+        }
+        return "redirect:/product/list";
     }
 
     @GetMapping("/list")
     public String productListPage(Model model) {
         List<Product> allProducts = service.findAll();
         model.addAttribute("products", allProducts);
-        return "productList";
+        return "ProductList";
     }
 }
