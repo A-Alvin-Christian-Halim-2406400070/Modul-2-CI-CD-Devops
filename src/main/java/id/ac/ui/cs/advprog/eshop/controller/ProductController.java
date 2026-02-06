@@ -14,10 +14,15 @@ import java.util.Map;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/product")
+@RequestMapping({"/product", ""})
 public class ProductController {
     @Autowired
     private ProductService service;
+
+    @GetMapping("/")
+    public String homePage(Model model) {
+        return "index";
+    }
 
     @GetMapping("/create")
     public String createProductPage(Model model) {
