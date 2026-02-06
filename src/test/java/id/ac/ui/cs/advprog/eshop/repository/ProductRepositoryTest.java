@@ -17,9 +17,12 @@ class ProductRepositoryTest {
 
     @InjectMocks
     ProductRepository productRepository;
+
     @BeforeEach
     void setUp() {
+        productRepository = new ProductRepository();
     }
+
     @Test
     void testCreateAndFind(){
         Product product = new Product();
@@ -35,11 +38,13 @@ class ProductRepositoryTest {
         assertEquals(product.getProductName(), savedProduct.getProductName());
         assertEquals(product.getProductQuantity(), savedProduct.getProductQuantity());
     }
+
     @Test
     void testFindAllIfEmpty(){
         Iterator<Product> productIterator = productRepository.findAll();
         assertFalse(productIterator.hasNext());
     }
+
     @Test
     void testFindAllIfMoreThanOneProduct(){
         Product product1 = new Product();
@@ -66,6 +71,80 @@ class ProductRepositoryTest {
         assertEquals(product2.getProductName(), savedProduct.getProductName());
         assertEquals(product2.getProductQuantity(), savedProduct.getProductQuantity());
         assertFalse(productIterator.hasNext());
+    }
+
+    @Test
+    void testFindProductByIdNotFound() {
+        UUID unknownId = UUID.randomUUID();
+        assertNull(productRepository.findProductById(unknownId));
+    }
+
+    @Test
+    void testDeleteNonExistingProduct() {
+        Product p = new Product();
+        p.setProductId(UUID.randomUUID());
+        Product deleted = productRepository.delete(p);
+        assertNull(deleted);
+        Iterator<Product> it = productRepository.findAll();
+        assertFalse(it.hasNext());
+    }
+
+    @Test
+    void testUpdateNonExistingProduct() {
+        Product p = new Product();
+        p.setProductId(UUID.randomUUID());
+        p.setProductName("NonExisting");
+        p.setProductQuantity(1);
+        assertNull(productRepository.update(p));
+    }
+
+    @Test
+    void testFindProductByIdFound() {
+        Product p = new Product();
+        UUID id = UUID.randomUUID();
+        p.setProductId(id);
+        p.setProductName("Exists");
+        p.setProductQuantity(10);
+        productRepository.create(p);
+        Product found = productRepository.findProductById(id);
+        assertNotNull(found);
+        assertEquals(id, found.getProductId());
+        assertEquals("Exists", found.getProductName());
+        assertEquals(10, found.getProductQuantity());
+    }
+
+    @Test
+    void testDeleteExistingProduct() {
+        Product p = new Product();
+        UUID id = UUID.randomUUID();
+        p.setProductId(id);
+        p.setProductName("ToDelete");
+        p.setProductQuantity(5);
+        productRepository.create(p);
+        Product deleted = productRepository.delete(p);
+        assertNotNull(deleted);
+        assertEquals(id, deleted.getProductId());
+        assertNull(productRepository.findProductById(id));
+    }
+
+    @Test
+    void testUpdateExistingProduct() {
+        Product p = new Product();
+        UUID id = UUID.randomUUID();
+        p.setProductId(id);
+        p.setProductName("Old");
+        p.setProductQuantity(1);
+        productRepository.create(p);
+        Product updated = new Product();
+        updated.setProductId(id);
+        updated.setProductName("New");
+        updated.setProductQuantity(2);
+        Product result = productRepository.update(updated);
+        assertNotNull(result);
+        Product after = productRepository.findProductById(id);
+        assertNotNull(after);
+        assertEquals("New", after.getProductName());
+        assertEquals(2, after.getProductQuantity());
     }
 
 }

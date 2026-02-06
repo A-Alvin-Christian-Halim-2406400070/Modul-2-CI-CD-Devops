@@ -21,13 +21,28 @@ class ProductTest {
     }
 
     @Test
+    void testGetProductIdNegative() {
+        assertNotEquals(UUID.fromString("eb558e9f-1c39-460e-8860-71af6af63bd7"), product.getProductId());
+    }
+
+    @Test
     void testGetProductName() {
         assertEquals("Sampo Cap Bambang", product.getProductName());
     }
 
     @Test
+    void testGetProductNameNegative() {
+        assertNotEquals("Sampo Cap Usep", product.getProductName());
+    }
+
+    @Test
     void testGetProductQuantity() {
         assertEquals(100, product.getProductQuantity());
+    }
+
+    @Test
+    void testGetProductQuantityNegative() {
+        assertNotEquals(10, product.getProductQuantity());
     }
 }
 
