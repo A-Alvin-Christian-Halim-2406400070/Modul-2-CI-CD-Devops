@@ -65,7 +65,6 @@ public class CreateProductFunctionalTest {
         String errorMessage = driver.findElement(By.id("quantityError")).getText();
         assertEquals(expectedErrorMessage, errorMessage);
         WebElement errorElem = driver.findElement(By.id("quantityError"));
-        Object clsProp = errorElem.getDomProperty("className");
         String color = errorElem.getCssValue("color");
         String rgb = color.replace("rgba(", "").replace("rgb(", "").replace(")", "");
         String[] parts = rgb.split(",");
