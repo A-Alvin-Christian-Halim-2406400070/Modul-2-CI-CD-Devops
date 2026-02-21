@@ -147,4 +147,97 @@ class ProductRepositoryTest {
         assertEquals(2, after.getProductQuantity());
     }
 
+    @Test
+    void testUpdateWithNullProductReturnsNull() {
+        assertNull(productRepository.update(null));
+    }
+
+    @Test
+    void testUpdateWithNullProductIdReturnsNull() {
+        Product p = new Product();
+        p.setProductId(null);
+        p.setProductName("NoId");
+        p.setProductQuantity(1);
+        assertNull(productRepository.update(p));
+    }
+
+    @Test
+    void testDeleteWithNullProductReturnsNull() {
+        assertNull(productRepository.delete(null));
+    }
+
+    @Test
+    void testDeleteWithNullProductIdReturnsNull() {
+        Product p = new Product();
+        p.setProductId(null);
+        Product deleted = productRepository.delete(p);
+        assertNull(deleted);
+        Iterator<Product> it = productRepository.findAll();
+        assertFalse(it.hasNext());
+    }
+
+    @Test
+    void testFindProductByIdWithNullIdReturnsNull() {
+        assertNull(productRepository.findProductById(null));
+    }
+
+    @Test
+    void testClearRemovesAllProducts() {
+        Product p1 = new Product();
+        p1.setProductId(UUID.randomUUID());
+        p1.setProductName("P1");
+        p1.setProductQuantity(1);
+        Product p2 = new Product();
+        p2.setProductId(UUID.randomUUID());
+        p2.setProductName("P2");
+        p2.setProductQuantity(2);
+        productRepository.create(p1);
+        productRepository.create(p2);
+        productRepository.clear();
+        Iterator<Product> it = productRepository.findAll();
+        assertFalse(it.hasNext());
+    }
+
+    @Test
+    void testStoredProductWithNullIdIsIgnoredByOperations() {
+        Product pNull = new Product();
+        pNull.setProductId(null);
+        pNull.setProductName("NullId");
+        pNull.setProductQuantity(5);
+
+        Product pWithId = new Product();
+        UUID id = UUID.randomUUID();
+        pWithId.setProductId(id);
+        pWithId.setProductName("WithId");
+        pWithId.setProductQuantity(10);
+
+        productRepository.create(pNull);
+        productRepository.create(pWithId);
+
+        // find by an unknown id should not match the stored null-id product
+        assertNull(productRepository.findProductById(UUID.randomUUID()));
+
+        // update with an unknown id should return null and not affect stored products
+        Product toUpdate = new Product();
+        toUpdate.setProductId(UUID.randomUUID());
+        toUpdate.setProductName("Updated");
+        toUpdate.setProductQuantity(99);
+        assertNull(productRepository.update(toUpdate));
+
+        // delete with an unknown id should return null and not affect stored products
+        Product toDelete = new Product();
+        toDelete.setProductId(UUID.randomUUID());
+        assertNull(productRepository.delete(toDelete));
+
+        // ensure both stored products still exist (one with null id and one with id)
+        Iterator<Product> it = productRepository.findAll();
+        assertTrue(it.hasNext());
+        Product first = it.next();
+        assertNull(first.getProductId());
+        assertTrue(it.hasNext());
+        Product second = it.next();
+        assertEquals(id, second.getProductId());
+        assertFalse(it.hasNext());
+    }
+
 }
