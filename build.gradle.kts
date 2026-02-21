@@ -70,6 +70,7 @@ sonarqube {
         property("sonar.projectKey", "A-Alvin-Christian-Halim-2406400070_Modul-2-CI-CD-Devops")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.organization", "a-alvin-christian-halim-2406400070")
+        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
 
@@ -83,4 +84,8 @@ tasks.test{
 
 tasks.jacocoTestReport{
     dependsOn(tasks.test)
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }
