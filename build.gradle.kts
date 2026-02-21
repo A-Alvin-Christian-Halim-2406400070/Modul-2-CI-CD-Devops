@@ -69,7 +69,7 @@ sonarqube {
     properties {
         property("sonar.projectKey", "A-Alvin-Christian-Halim-2406400070_Modul-2-CI-CD-Devops")
         property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.organization", "A-Alvin Christian Halim-2406400070")
+        property("sonar.organization", "a-alvin-christian-halim-2406400070")
     }
 }
 
