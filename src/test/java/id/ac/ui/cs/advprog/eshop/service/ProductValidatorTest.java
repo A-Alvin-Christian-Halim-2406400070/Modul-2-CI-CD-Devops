@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ProductValidatorTest {
+public class ProductValidatorTest {
 
     @Test
     void isQuantityInteger_whenValidInteger_returnsTrue() {
@@ -59,6 +59,12 @@ class ProductValidatorTest {
         assertTrue(ProductValidator.isQuantityInteger(input));
         int parsed = Integer.parseInt(input);
         assertFalse(ProductValidator.isQuantityPositive(parsed));
+    }
+
+    @Test
+    void defaultConstructor(){
+        ProductValidator v = new ProductValidator();
+        assertNotNull(v);
     }
 
 }
