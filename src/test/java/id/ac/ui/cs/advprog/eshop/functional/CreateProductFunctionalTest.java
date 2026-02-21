@@ -1,7 +1,6 @@
 package id.ac.ui.cs.advprog.eshop.functional;
 
 import io.github.bonigarcia.seljup.SeleniumJupiter ;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +65,6 @@ public class CreateProductFunctionalTest {
         String errorMessage = driver.findElement(By.id("quantityError")).getText();
         assertEquals(expectedErrorMessage, errorMessage);
         WebElement errorElem = driver.findElement(By.id("quantityError"));
-        Object clsProp = errorElem.getDomProperty("className");
         String color = errorElem.getCssValue("color");
         String rgb = color.replace("rgba(", "").replace("rgb(", "").replace(")", "");
         String[] parts = rgb.split(",");
