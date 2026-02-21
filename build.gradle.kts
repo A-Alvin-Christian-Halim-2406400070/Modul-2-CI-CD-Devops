@@ -4,8 +4,8 @@ val webdrivermanagerVersion = "5.6.3"
 
 plugins {
     java
-    id "jacoco"
-    id 'org.sonarqube' version '7.2.2.6593'
+    id("jacoco")
+    id("org.sonarqube") version "7.2.2.6593"
     id("org.springframework.boot") version "3.5.10"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -65,11 +65,11 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
-sonar {
-    properties{
-        property "sonar.projectKey", "alvin-eshop"
-        property "sonar.host.url", "https://sonarcloud.io"
-        property "sonar.organization", "A-Alvin Christian Halim-2406400070"
+sonarqube {
+    properties {
+        property("sonar.projectKey", "alvin-eshop")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.organization", "A-Alvin Christian Halim-2406400070")
     }
 }
 
