@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import id.ac.ui.cs.advprog.eshop.repository.ProductRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT ;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
