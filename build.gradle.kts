@@ -67,7 +67,7 @@ tasks.withType<Test>().configureEach {
 
 sonarqube {
     properties {
-        property("sonar.projectKey", "alvin-eshop")
+        property("sonar.projectKey", "a-alvin-christian-halim-2406400070")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.organization", "A-Alvin Christian Halim-2406400070")
     }
