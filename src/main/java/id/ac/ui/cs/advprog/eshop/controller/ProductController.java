@@ -150,13 +150,7 @@ public class ProductController {
             errors.put("productQuantity", "Quantity must be an integer");
             return null;
         }
-        int quantity;
-        try {
-            quantity = Integer.parseInt(productQuantityStr);
-        } catch (NumberFormatException e) {
-            errors.put("productQuantity", "Quantity must be an integer");
-            return null;
-        }
+        int quantity = Integer.parseInt(productQuantityStr);
         if (!ProductValidator.isQuantityPositive(quantity)) {
             errors.put("productQuantity", "Quantity has to be more than 0");
             return null;
