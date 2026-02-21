@@ -4,7 +4,8 @@ val webdrivermanagerVersion = "5.6.3"
 
 plugins {
     java
-    jacoco
+    id("jacoco")
+    id("org.sonarqube") version "7.2.2.6593"
     id("org.springframework.boot") version "3.5.10"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -62,6 +63,14 @@ tasks.register<Test>("functionalTest") {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "A-Alvin-Christian-Halim-2406400070_Modul-2-CI-CD-Devops")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.organization", "a-alvin-christian-halim-2406400070")
+    }
 }
 
 tasks.test{
