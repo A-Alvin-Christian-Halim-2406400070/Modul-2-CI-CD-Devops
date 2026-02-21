@@ -99,4 +99,15 @@ class ProductServiceImplTest {
         assertEquals(sample, result);
         verify(productRepository).update(sample);
     }
+
+    @Test
+    void testConstructor() {
+        ProductRepository mockRepo = mock(ProductRepository.class);
+        ProductServiceImpl svc = new ProductServiceImpl(mockRepo);
+        when(mockRepo.findAll()).thenReturn(new ArrayList<Product>().iterator());
+        List<Product> result = svc.findAll();
+        assertNotNull(result);
+        verify(mockRepo).findAll();
+    }
+
 }
