@@ -1,10 +1,9 @@
 name: Deploy
 
 on:
-  workflow_run:
-    workflows: ["SonarCloud"] # this usually takes the longest
-    types:
-      - completed
+  push:
+    branches:
+      - master
 
 jobs:
   check-workflow-status:
