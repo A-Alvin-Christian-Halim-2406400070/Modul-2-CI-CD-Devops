@@ -65,9 +65,6 @@ jobs:
             return sonar.workflow_runs[0].conclusion === 'success';
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-      
-      - name: Check status of SonarQubeCloud
-      
 
       - name: Verify all workflows succeeded
         id: check-status
