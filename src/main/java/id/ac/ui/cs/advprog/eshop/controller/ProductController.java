@@ -1,23 +1,30 @@
 package id.ac.ui.cs.advprog.eshop.controller;
 
-import id.ac.ui.cs.advprog.eshop.model.Product;
-import id.ac.ui.cs.advprog.eshop.service.ProductService;
-import id.ac.ui.cs.advprog.eshop.service.ProductValidator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import id.ac.ui.cs.advprog.eshop.model.Product;
+import id.ac.ui.cs.advprog.eshop.service.ProductService;
+import id.ac.ui.cs.advprog.eshop.service.ProductValidator;
+
 @Controller
 @RequestMapping({"/product", ""})
 public class ProductController {
+    private static final String PRODUCT_ATTRIBUTE_NAME = "product";
     private final ProductService service;
+    private static final String ERROR_MESSAGE = "errorMessage";
+    private static final String PRODUCT_NOT_EXISTS = "Product doesn't exists";
 
     @Autowired
     public ProductController(ProductService service) {
@@ -29,10 +36,11 @@ public class ProductController {
         return "index";
     }
 
+    private static final String REDIRECT_PRODUCT_LIST = "redirect:/product/list";
     @GetMapping("/create")
     public String createProductPage(Model model) {
         Product product = new Product();
-        model.addAttribute("product", product);
+        model.addAttribute(PRODUCT_ATTRIBUTE_NAME, product);
         return "CreateProduct";
     }
 
@@ -47,7 +55,7 @@ public class ProductController {
         if (!errors.isEmpty()) {
             Product product = new Product();
             product.setProductName(productName);
-            model.addAttribute("product", product);
+            model.addAttribute(PRODUCT_ATTRIBUTE_NAME, product);
             model.addAttribute("productQuantityRaw", productQuantityStr);
             model.addAttribute("errors", errors);
             return "CreateProduct";
@@ -57,7 +65,7 @@ public class ProductController {
         product.setProductName(productName);
         product.setProductQuantity(quantity);
         service.create(product);
-        return "redirect:/product/list";
+        return REDIRECT_PRODUCT_LIST;
     }
 
     @GetMapping("/edit")
@@ -66,13 +74,13 @@ public class ProductController {
         try {
             uid = UUID.fromString(id);
         } catch (IllegalArgumentException e) {
-            return "redirect:/product/list";
+            return REDIRECT_PRODUCT_LIST;
         }
         Product product = service.findProductById(uid);
-        if (product == null) {
-            return "redirect:/product/list";
+            if (product == null) {
+                return REDIRECT_PRODUCT_LIST;
         }
-        model.addAttribute("product", product);
+            model.addAttribute(PRODUCT_ATTRIBUTE_NAME, product);
         return "EditProduct";
     }
 
@@ -82,18 +90,17 @@ public class ProductController {
                               @RequestParam("productQuantity") String productQuantityStr,
                               Model model) {
         Map<String, String> errors = new HashMap<>();
-
         Integer quantity = parseAndValidateQuantity(productQuantityStr, errors);
 
         final UUID uid;
         try {
             uid = UUID.fromString(productId);
         } catch (IllegalArgumentException e) {
-            return "redirect:/product/list";
+            return REDIRECT_PRODUCT_LIST;
         }
         Product existing = service.findProductById(uid);
         if (existing == null) {
-            return "redirect:/product/list";
+                return REDIRECT_PRODUCT_LIST;
         }
 
         if (!errors.isEmpty()) {
@@ -104,7 +111,7 @@ public class ProductController {
                 product.setProductId(UUID.randomUUID());
             }
             product.setProductName(productName);
-            model.addAttribute("product", product);
+            model.addAttribute(PRODUCT_ATTRIBUTE_NAME, product);
             model.addAttribute("productQuantityRaw", productQuantityStr);
             model.addAttribute("errors", errors);
             return "EditProduct";
@@ -113,29 +120,29 @@ public class ProductController {
         existing.setProductName(productName);
         existing.setProductQuantity(quantity);
         service.update(existing);
-        return "redirect:/product/list";
+            return REDIRECT_PRODUCT_LIST;
     }
 
     @PostMapping("/delete")
     public String deleteProduct(@RequestParam("id") String id, RedirectAttributes redirectAttributes) {
         if (id == null || id.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Product doesn't exists");
-            return "redirect:/product/list";
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE, PRODUCT_NOT_EXISTS);
+                return REDIRECT_PRODUCT_LIST;
         }
         final UUID uid;
         try {
             uid = UUID.fromString(id);
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Product doesn't exists");
-            return "redirect:/product/list";
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE, PRODUCT_NOT_EXISTS);
+                return REDIRECT_PRODUCT_LIST;
         }
         Product deletedProduct = service.findProductById(uid);
         if (deletedProduct != null) {
             service.delete(deletedProduct);
-            return "redirect:/product/list";
+                return REDIRECT_PRODUCT_LIST;
         }
-        redirectAttributes.addFlashAttribute("errorMessage", "Product doesn't exists");
-        return "redirect:/product/list";
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, PRODUCT_NOT_EXISTS);
+            return REDIRECT_PRODUCT_LIST;
     }
 
     @GetMapping("/list")
@@ -144,7 +151,6 @@ public class ProductController {
         model.addAttribute("products", allProducts);
         return "ProductList";
     }
-
     private Integer parseAndValidateQuantity(String productQuantityStr, Map<String, String> errors) {
         if (!ProductValidator.isQuantityInteger(productQuantityStr)) {
             errors.put("productQuantity", "Quantity must be an integer");

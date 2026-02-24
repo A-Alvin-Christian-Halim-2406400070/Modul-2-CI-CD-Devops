@@ -54,6 +54,7 @@ public class DeleteProductFunctionalTest {
             try {
                 this.driver.quit();
             } catch (Exception ignored) {
+                // Exception ignored because driver.quit() may throw if browser is already closed
             } finally {
                 this.driver = null;
             }

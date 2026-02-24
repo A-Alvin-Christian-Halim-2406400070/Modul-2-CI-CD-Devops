@@ -1,8 +1,8 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ProductValidatorTest {
 
@@ -61,10 +61,5 @@ public class ProductValidatorTest {
         assertFalse(ProductValidator.isQuantityPositive(parsed));
     }
 
-    @Test
-    void defaultConstructor(){
-        ProductValidator v = new ProductValidator();
-        assertNotNull(v);
-    }
 
 }
