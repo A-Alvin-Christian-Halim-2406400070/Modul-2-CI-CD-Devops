@@ -1,26 +1,26 @@
 package id.ac.ui.cs.advprog.eshop.functional;
 
-import io.github.bonigarcia.seljup.SeleniumJupiter ;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.BeforeEach;
+import java.time.Duration ;
+
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import java.time.Duration;
+import org.openqa.selenium.support.ui.WebDriverWait ;
+import org.springframework.beans.factory.annotation.Autowired ;
 import org.springframework.beans.factory.annotation.Value ;
-import org.springframework.boot.test.context.SpringBootTest ;
-import org.springframework.boot.test.web.server.LocalServerPort ;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
 import id.ac.ui.cs.advprog.eshop.repository.ProductRepository;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT ;
+import io.github.bonigarcia.seljup.SeleniumJupiter ;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ExtendWith(SeleniumJupiter.class)
@@ -54,6 +54,7 @@ class UpdateProductFunctionalTest {
             try {
                 this.driver.quit();
             } catch (Exception ignored) {
+                // Exception ignored because driver.quit() may throw if browser is already closed
             } finally {
                 this.driver = null;
             }
