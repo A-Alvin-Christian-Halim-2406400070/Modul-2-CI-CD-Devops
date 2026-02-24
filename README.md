@@ -31,8 +31,43 @@ There are multiple issues identified in SonarQube, however I decided to fix only
 
 ![alt text](<assets/Screenshot 2026-02-21 182500.png>)
 
+![alt text](assets/high.png)
+
+All of the high severity are string literal duplications. To fix it, I assign the string literal that is being duplicated to a variable and then call that variable whenever I need to use it. Here is an example: 
+
+![alt text](assets/fix-high.png)
+
+For unused imports, the fix is obvious, remove it
+
+![alt text](assets/import.png)
+
+Next I refactored the `ProductControllerTest` from 3 seperate test cases to 1 parameterized testcase. For this I used `@ParameterizedTest`, ` @NullAndEmptySource`, and `@ValueSource`
+
+![alt text](assets/unit-test.png)
+
+Next on `DeleteProductFunctionalTest` and `UpdateProductFunctionalTest` there is a catch exception block that is empty. I added a comment explaining why it is empty
+
+![alt text](assets/empty.png)
+
+Next I added a private constructor to `ProductValidator` to prevent instantiation as it is a utility class
+
+![alt text](assets/private.png)
+
+Lastly I removed feild injection and used constructor injection instead for `ProductServiceImpl` and `ProductController`
+
+![alt text](assets/inject.png)
+
+As we can see, after all the changes there are no more High and Medium severity issues
+
 ![alt text](assets/image.png)
 
+2. Look at your CI/CD workflows (GitHub)/pipelines (GitLab). Do you think the current
+implementation has met the definition of Continuous Integration and Continuous
+Deployment? Explain the reasons (minimum 3 sentences)!
 
+Yes, I do think that my current implementation has met the definition of Continous Integration and Continous Deployment. The definition of Continous Integration is the practice were we automate the process of integrating changes by utilizing tools. Wheneve we want to integrate changes, we need to test the code first. My current workflow has automated 3 tests which will be activated everytime I push changes, OSSF Scorecard, unit tests, and sonarcloud for tests coverage. There is also a check for SonarQube Cloud code scan however it only applies to the master branch as I only have the free tier.
 
+The definition of Continous Deployment is automating deployment after our code has past the tests defined in the CI workflow. My deploy script does exactly that, it checks for the status of all the workflows (sonar, ossf, and unit tests) and make sure that it all succeeds. If it doesnt, then the deploy job would be skipped. However if it all succeeds then it will automatically deploy the application to koyeb utilizing the koyeb cli.
+
+For those reasons, I believe that my implementation has met the definition of CI/CD, although there are definitely some room for improvements, for example integrating functional tests to the workflow instead of only unit tests.
 </details>
