@@ -1,6 +1,9 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
 public class ProductValidator {
+    private ProductValidator() {
+        // Prevent instantiation
+    }
     public static boolean isQuantityInteger(String quantityStr) {
         if (quantityStr == null) return false;
         try {
