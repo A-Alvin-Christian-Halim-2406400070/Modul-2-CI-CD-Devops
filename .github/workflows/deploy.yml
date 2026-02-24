@@ -26,29 +26,7 @@ jobs:
               status: 'completed',
               per_page: 5
             });
-
-            console.log("=== DEBUG CI RUNS ===");
-            console.log("Total runs returned:", ci.workflow_runs.length);
-
-            ci.workflow_runs.forEach((run, i) => {
-              console.log(`Run[${i}]`);
-              console.log("  id:", run.id);
-              console.log("  status:", run.status);
-              console.log("  conclusion:", run.conclusion);
-              console.log("  event:", run.event);
-              console.log("  head_branch:", run.head_branch);
-              console.log("  created_at:", run.created_at);
-            });
-
-            if (ci.workflow_runs.length === 0) {
-              console.log("❌ No workflow runs found");
-              return false;
-            }
-
-            const latest = ci.workflow_runs[0];
-            console.log("✅ Using latest run conclusion:", latest.conclusion);
-
-            return latest.conclusion === 'success';
+            return ci.workflow_runs[0].conclusion === 'success';
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
 
@@ -87,6 +65,9 @@ jobs:
             return sonar.workflow_runs[0].conclusion === 'success';
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+      
+      - name: Check status of SonarQubeCloud
+      
 
       - name: Verify all workflows succeeded
         id: check-status
@@ -118,7 +99,7 @@ jobs:
       - name: Install Koyeb CLI (if not cached)
         if: steps.cache-koyeb.outputs.cache-hit != 'true'
         run: |
-          curl -fsSL https://raw.githubusercontent.com/koyeb/koyeb-cli/master/install.sh | sh
+          curl --proto "=https" -fsSL https://raw.githubusercontent.com/koyeb/koyeb-cli/master/install.sh | sh
           echo "$HOME/.koyeb/bin" >> $GITHUB_PATH
           export PATH="$HOME/.koyeb/bin:$PATH"
       - name: Deploy to Koyeb
