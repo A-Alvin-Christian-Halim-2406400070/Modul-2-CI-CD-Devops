@@ -1,24 +1,34 @@
 package id.ac.ui.cs.advprog.eshop.controller;
 
-import id.ac.ui.cs.advprog.eshop.model.Product;
-import id.ac.ui.cs.advprog.eshop.service.ProductService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.ui.Model;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.ui.Model;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import id.ac.ui.cs.advprog.eshop.model.Product;
+import id.ac.ui.cs.advprog.eshop.service.ProductService;
 
 @ExtendWith(MockitoExtension.class)
 class ProductControllerTest {
@@ -226,27 +236,11 @@ class ProductControllerTest {
         assertEquals(10, existing.getProductQuantity());
     }
 
-    @Test
-    void deleteProductWithNullIdRedirectsWithErrorMessage() {
-        String view = controller.deleteProduct(null, redirectAttributes);
-
-        assertEquals("redirect:/product/list", view);
-        verify(redirectAttributes).addFlashAttribute("errorMessage", "Product doesn't exists");
-        verifyNoInteractions(service);
-    }
-
-    @Test
-    void deleteProductWithEmptyIdRedirectsWithErrorMessage() {
-        String view = controller.deleteProduct("", redirectAttributes);
-
-        assertEquals("redirect:/product/list", view);
-        verify(redirectAttributes).addFlashAttribute("errorMessage", "Product doesn't exists");
-        verifyNoInteractions(service);
-    }
-
-    @Test
-    void deleteProductWithInvalidUuidRedirectsWithErrorMessage() {
-        String view = controller.deleteProduct("invalid", redirectAttributes);
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"invalid"})
+    void deleteProductWithInvalidIdRedirectsWithErrorMessage(String id) {
+        String view = controller.deleteProduct(id, redirectAttributes);
 
         assertEquals("redirect:/product/list", view);
         verify(redirectAttributes).addFlashAttribute("errorMessage", "Product doesn't exists");
