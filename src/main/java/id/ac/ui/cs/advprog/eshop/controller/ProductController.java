@@ -24,6 +24,7 @@ public class ProductController {
     private static final String PRODUCT_ATTRIBUTE_NAME = "product";
     private final ProductService service;
     private static final String ERROR_MESSAGE = "errorMessage";
+    private static final String PRODUCT_NOT_EXISTS = "Product doesn't exists";
 
     @Autowired
     public ProductController(ProductService service) {
@@ -125,14 +126,14 @@ public class ProductController {
     @PostMapping("/delete")
     public String deleteProduct(@RequestParam("id") String id, RedirectAttributes redirectAttributes) {
         if (id == null || id.isEmpty()) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "Product doesn't exists");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE, PRODUCT_NOT_EXISTS);
                 return REDIRECT_PRODUCT_LIST;
         }
         final UUID uid;
         try {
             uid = UUID.fromString(id);
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "Product doesn't exists");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE, PRODUCT_NOT_EXISTS);
                 return REDIRECT_PRODUCT_LIST;
         }
         Product deletedProduct = service.findProductById(uid);
@@ -140,7 +141,7 @@ public class ProductController {
             service.delete(deletedProduct);
                 return REDIRECT_PRODUCT_LIST;
         }
-        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "Product doesn't exists");
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, PRODUCT_NOT_EXISTS);
             return REDIRECT_PRODUCT_LIST;
     }
 
