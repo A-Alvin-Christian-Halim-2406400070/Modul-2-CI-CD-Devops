@@ -23,6 +23,7 @@ import id.ac.ui.cs.advprog.eshop.service.ProductValidator;
 public class ProductController {
     private static final String PRODUCT_ATTRIBUTE_NAME = "product";
     private final ProductService service;
+    private static final String ERROR_MESSAGE = "errorMessage";
 
     @Autowired
     public ProductController(ProductService service) {
@@ -124,14 +125,14 @@ public class ProductController {
     @PostMapping("/delete")
     public String deleteProduct(@RequestParam("id") String id, RedirectAttributes redirectAttributes) {
         if (id == null || id.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Product doesn't exists");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "Product doesn't exists");
                 return REDIRECT_PRODUCT_LIST;
         }
         final UUID uid;
         try {
             uid = UUID.fromString(id);
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Product doesn't exists");
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "Product doesn't exists");
                 return REDIRECT_PRODUCT_LIST;
         }
         Product deletedProduct = service.findProductById(uid);
@@ -139,7 +140,7 @@ public class ProductController {
             service.delete(deletedProduct);
                 return REDIRECT_PRODUCT_LIST;
         }
-        redirectAttributes.addFlashAttribute("errorMessage", "Product doesn't exists");
+        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "Product doesn't exists");
             return REDIRECT_PRODUCT_LIST;
     }
 
