@@ -1,13 +1,13 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
 public class ProductValidator {
-    private ProductValidator() {
-        // Prevent instantiation
-    }
+    private ProductValidator() {}
     public static boolean isQuantityInteger(String quantityStr) {
         if (quantityStr == null) return false;
+        String s = quantityStr.trim();
+        if (s.isEmpty()) return false;
         try {
-            Integer.parseInt(quantityStr);
+            Integer.parseInt(s);
             return true;
         } catch (NumberFormatException e) {
             return false;

@@ -21,13 +21,9 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public Product create(Product product) {
+        if (product == null) return null;
+        if (product.getProductQuantity() <= 0) return null;
         productRepository.create(product);
-        return product;
-    }
-
-    @Override
-    public Product delete(Product product) {
-        productRepository.delete(product);
         return product;
     }
 
@@ -37,6 +33,42 @@ public class ProductServiceImpl implements ProductService{
         List<Product> allProduct = new ArrayList<>();
         productIterator.forEachRemaining(allProduct::add);
         return allProduct;
+    }
+
+    @Override
+    public Product deleteProductById(String productId) {
+        if (productId == null) return null;
+        try {
+            UUID id = UUID.fromString(productId);
+            Product p = productRepository.findProductById(id);
+            if (p == null) return null;
+            return productRepository.delete(p);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Product findById(String productId) {
+        if (productId == null) return null;
+        try {
+            UUID id = UUID.fromString(productId);
+            return productRepository.findProductById(id);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Product update(UUID productId, Product product) {
+        if (productId == null || product == null) return null;
+        product.setProductId(productId);
+        return productRepository.update(product);
+    }
+
+    @Override
+    public Product delete(Product product) {
+        return productRepository.delete(product);
     }
 
     @Override

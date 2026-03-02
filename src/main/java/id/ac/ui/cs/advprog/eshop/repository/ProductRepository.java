@@ -13,6 +13,8 @@ public class ProductRepository {
     private List<Product> productData = new ArrayList<>();
 
     public Product create(Product product) {
+        if (product == null) return null;
+        if (product.getProductQuantity() <= 0) return null;
         productData.add(product);
         return product;
     }
@@ -42,6 +44,7 @@ public class ProductRepository {
 
     public Product update(Product product) {
         if (product == null || product.getProductId() == null) return null;
+        if (product.getProductQuantity() <= 0) return null;
         for (int i = 0; i < productData.size(); i++) {
             Product p = productData.get(i);
             if (p.getProductId() != null && p.getProductId().equals(product.getProductId())) {
