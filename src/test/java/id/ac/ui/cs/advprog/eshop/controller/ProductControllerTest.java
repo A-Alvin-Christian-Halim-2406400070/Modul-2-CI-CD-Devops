@@ -120,13 +120,13 @@ class ProductControllerTest {
 
     @Test
     void editProductPageWithMissingProductAddsNullProduct() {
-        UUID id = UUID.randomUUID();
-        when(service.findById(id.toString())).thenReturn(null);
+        String id = UUID.randomUUID().toString();
+        when(service.findById(id)).thenReturn(null);
 
-        String view = controller.editProductPage(id.toString(), model);
+        String view = controller.editProductPage(id, model);
 
         assertEquals("EditProduct", view);
-        verify(service).findById(id.toString());
+        verify(service).findById(id);
         ArgumentCaptor<Product> productCaptor = ArgumentCaptor.forClass(Product.class);
         verify(model).addAttribute(eq("product"), productCaptor.capture());
         assertNull(productCaptor.getValue());
@@ -134,32 +134,34 @@ class ProductControllerTest {
 
     @Test
     void editProductPageWithValidProductReturnsEditProduct() {
-        UUID id = UUID.randomUUID();
+        String id = UUID.randomUUID().toString();
         Product existing = new Product();
         existing.setProductId(id);
-        when(service.findById(id.toString())).thenReturn(existing);
+        when(service.findById(id)).thenReturn(existing);
 
-        String view = controller.editProductPage(id.toString(), model);
+        String view = controller.editProductPage(id, model);
 
         assertEquals("EditProduct", view);
-        verify(service).findById(id.toString());
+        verify(service).findById(id);
         verify(model).addAttribute("product", existing);
     }
 
     @Test
-    void editProductWithInvalidProductIdRedirects() {
+    void editProductWithNonExistentIdReturnsEditProduct() {
+        when(service.update(eq("not-a-uuid"), any(Product.class))).thenReturn(null);
+
         String view = controller.editProductPost("not-a-uuid", "Laptop", "10", model);
 
-        assertEquals("redirect:list", view);
-        verifyNoInteractions(service);
+        assertEquals("EditProduct", view);
+        verify(service).update(eq("not-a-uuid"), any(Product.class));
     }
 
     @Test
     void editProductWhenUpdateReturnsNullShowsEditProduct() {
-        UUID id = UUID.randomUUID();
+        String id = UUID.randomUUID().toString();
         when(service.update(eq(id), any(Product.class))).thenReturn(null);
 
-        String view = controller.editProductPost(id.toString(), "Laptop", "10", model);
+        String view = controller.editProductPost(id, "Laptop", "10", model);
 
         assertEquals("EditProduct", view);
         verify(service).update(eq(id), any(Product.class));
@@ -167,12 +169,12 @@ class ProductControllerTest {
 
     @Test
     void editProductWithInvalidQuantityReturnsEditProductWithErrors() {
-        UUID id = UUID.randomUUID();
+        String id = UUID.randomUUID().toString();
 
-        String view = controller.editProductPost(id.toString(), "Laptop", "nope", model);
+        String view = controller.editProductPost(id, "Laptop", "nope", model);
 
         assertEquals("EditProduct", view);
-        verify(service, never()).update(any(UUID.class), any(Product.class));
+        verify(service, never()).update(anyString(), any(Product.class));
 
         ArgumentCaptor<Product> productCaptor = ArgumentCaptor.forClass(Product.class);
         verify(model).addAttribute(eq("product"), productCaptor.capture());
@@ -189,7 +191,7 @@ class ProductControllerTest {
 
     @Test
     void editProductWithValidInputsUpdatesProductAndRedirects() {
-        UUID id = UUID.randomUUID();
+        String id = UUID.randomUUID().toString();
         Product existing = new Product();
         existing.setProductId(id);
         existing.setProductName("Old");
@@ -201,7 +203,7 @@ class ProductControllerTest {
             return existing;
         });
 
-        String view = controller.editProductPost(id.toString(), "Laptop", "10", model);
+        String view = controller.editProductPost(id, "Laptop", "10", model);
 
         assertEquals("redirect:list", view);
         verify(service).update(eq(id), any(Product.class));
@@ -211,12 +213,21 @@ class ProductControllerTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {"invalid"})
-    void deleteProductWithInvalidIdDoesNothing(String id) {
+    void deleteProductWithNullOrEmptyIdDoesNothing(String id) {
         String view = controller.deleteProduct(id);
 
         assertEquals("redirect:list", view);
         verifyNoInteractions(service);
+    }
+
+    @Test
+    void deleteProductWithAnyStringIdCallsService() {
+        String id = "any-string-id";
+
+        String view = controller.deleteProduct(id);
+
+        assertEquals("redirect:list", view);
+        verify(service).deleteProductById(id);
     }
 
     @Test

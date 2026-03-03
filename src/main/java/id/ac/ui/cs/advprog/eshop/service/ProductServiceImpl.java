@@ -1,21 +1,21 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
-import id.ac.ui.cs.advprog.eshop.model.Product;
-import id.ac.ui.cs.advprog.eshop.repository.ProductRepository;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.UUID;
+import id.ac.ui.cs.advprog.eshop.model.Product;
+import id.ac.ui.cs.advprog.eshop.repository.RepositoryInterface;
 
 @Service
 public class ProductServiceImpl implements ProductService{
-    private final ProductRepository productRepository;
+    private final RepositoryInterface<Product, String> productRepository;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(RepositoryInterface<Product, String> productRepository) {
         this.productRepository = productRepository;
     }
 
@@ -38,32 +38,22 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public Product deleteProductById(String productId) {
         if (productId == null) return null;
-        try {
-            UUID id = UUID.fromString(productId);
-            Product p = productRepository.findProductById(id);
-            if (p == null) return null;
-            return productRepository.delete(p);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        Product p = productRepository.findById(productId);
+        if (p == null) return null;
+        productRepository.delete(productId);
+        return p;
     }
 
     @Override
     public Product findById(String productId) {
         if (productId == null) return null;
-        try {
-            UUID id = UUID.fromString(productId);
-            return productRepository.findProductById(id);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        return productRepository.findById(productId);
     }
 
     @Override
-    public Product update(UUID productId, Product product) {
+    public Product update(String productId, Product product) {
         if (productId == null || product == null) return null;
         product.setProductId(productId);
-        return productRepository.update(product);
+        return productRepository.update(productId, product);
     }
-
 }

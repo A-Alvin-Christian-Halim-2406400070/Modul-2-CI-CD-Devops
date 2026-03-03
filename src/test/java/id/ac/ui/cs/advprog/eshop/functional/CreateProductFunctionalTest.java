@@ -97,10 +97,10 @@ public class CreateProductFunctionalTest {
 
     @Test
     void testInvalidCreateProductQuantity_NegativeQuantity(ChromeDriver driver) {
-        testInvalidCreateProductTemplate(driver, "-5", "Quantity has to be more than 0");
+        testInvalidCreateProductTemplate(driver, "-5", "Quantity must be positive");
     }
     @Test
     void testInvalidCreateProductQuantity_ZeroQuantity(ChromeDriver driver) {
-        testInvalidCreateProductTemplate(driver, "0", "Quantity has to be more than 0");
+        testInvalidCreateProductTemplate(driver, "0", "Quantity must be positive");
     }
 }

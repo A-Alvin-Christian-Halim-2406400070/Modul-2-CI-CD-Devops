@@ -198,7 +198,7 @@ class UpdateProductFunctionalTest {
 
     @Test
     void testInvalidUpdateProductQuantity_NegativeQuantity() {
-        testInvalidUpdateProductTemplate("-5", "Quantity has to be more than 0");
+        testInvalidUpdateProductTemplate("-5", "Quantity must be positive");
     }
 
     @Test
@@ -213,6 +213,6 @@ class UpdateProductFunctionalTest {
 
     @Test
     void testInvalidUpdateProductQuantity_ZeroQuantity() {
-        testInvalidUpdateProductTemplate("0", "Quantity has to be more than 0");
+        testInvalidUpdateProductTemplate("0", "Quantity must be positive");
     }
 }

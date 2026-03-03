@@ -3,7 +3,6 @@ package id.ac.ui.cs.advprog.eshop.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -92,7 +91,7 @@ public class ProductController {
         }
         if (!errors.isEmpty()){
             Product product = new Product();
-            try{ product.setProductId(UUID.fromString(productId)); } catch (IllegalArgumentException e) {}
+            product.setProductId(productId);
             product.setProductName(productName);
             model.addAttribute("product", product);
             model.addAttribute("productQuantityRaw", productQuantityRaw);
@@ -100,7 +99,7 @@ public class ProductController {
             return "EditProduct";
         }
         Product product = new Product();
-        try{ product.setProductId(UUID.fromString(productId)); } catch (IllegalArgumentException e) { return "redirect:list"; }
+        product.setProductId(productId);
         product.setProductName(productName);
         product.setProductQuantity(Integer.parseInt(productQuantityRaw.trim()));
         Product updated = service.update(product.getProductId(), product);
@@ -117,11 +116,6 @@ public class ProductController {
     @PostMapping("/delete")
     public String deleteProduct(@RequestParam("productId") String productId) {
         if (productId == null || productId.trim().isEmpty()) return "redirect:list";
-        try {
-            UUID.fromString(productId);
-        } catch (IllegalArgumentException e) {
-            return "redirect:list";
-        }
         service.deleteProductById(productId);
         return "redirect:list";
     }
