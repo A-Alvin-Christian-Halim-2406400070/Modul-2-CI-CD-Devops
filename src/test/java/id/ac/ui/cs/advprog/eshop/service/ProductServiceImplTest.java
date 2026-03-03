@@ -1,21 +1,25 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
-import id.ac.ui.cs.advprog.eshop.model.Product;
-import id.ac.ui.cs.advprog.eshop.repository.ProductRepository;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Iterator;
-import java.util.UUID;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import id.ac.ui.cs.advprog.eshop.model.Product;
+import id.ac.ui.cs.advprog.eshop.repository.ProductRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
@@ -45,14 +49,6 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void testDeleteForwardsToRepositoryAndReturnsProduct() {
-        when(productRepository.delete(sample)).thenReturn(sample);
-        Product result = productService.delete(sample);
-        assertEquals(sample, result);
-        verify(productRepository).delete(sample);
-    }
-
-    @Test
     void testFindAllConvertsIteratorToList() {
         List<Product> products = new ArrayList<>();
         Product p2 = new Product();
@@ -76,28 +72,6 @@ class ProductServiceImplTest {
         when(productRepository.findAll()).thenReturn(it);
         List<Product> result = productService.findAll();
         assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void testFindProductByIdWithNullReturnsNull() {
-        assertNull(productService.findProductById(null));
-        verifyNoInteractions(productRepository);
-    }
-
-    @Test
-    void testFindProductByIdForwardsToRepository() {
-        when(productRepository.findProductById(sample.getProductId())).thenReturn(sample);
-        Product result = productService.findProductById(sample.getProductId());
-        assertEquals(sample, result);
-        verify(productRepository).findProductById(sample.getProductId());
-    }
-
-    @Test
-    void testUpdateForwardsToRepository() {
-        when(productRepository.update(sample)).thenReturn(sample);
-        Product result = productService.update(sample);
-        assertEquals(sample, result);
-        verify(productRepository).update(sample);
     }
 
     @Test

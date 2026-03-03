@@ -66,19 +66,4 @@ public class ProductServiceImpl implements ProductService{
         return productRepository.update(product);
     }
 
-    @Override
-    public Product delete(Product product) {
-        return productRepository.delete(product);
-    }
-
-    @Override
-    public Product findProductById(UUID productId) {
-        if (productId == null) return null;
-        return productRepository.findProductById(productId);
-    }
-
-    @Override
-    public Product update(Product product) {
-        return productRepository.update(product);
-    }
 }
