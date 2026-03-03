@@ -1,166 +1,174 @@
 package id.ac.ui.cs.advprog.eshop.controller;
 
-import java.util.HashMap;
-import java.util.List;
+import id.ac.ui.cs.advprog.eshop.model.Car;
+import id.ac.ui.cs.advprog.eshop.model.Product;
+import id.ac.ui.cs.advprog.eshop.service.CarServiceImpl;
+import id.ac.ui.cs.advprog.eshop.service.ProductService;
+import id.ac.ui.cs.advprog.eshop.service.ProductValidator;
+
 import java.util.Map;
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import id.ac.ui.cs.advprog.eshop.model.Product;
-import id.ac.ui.cs.advprog.eshop.service.ProductService;
-import id.ac.ui.cs.advprog.eshop.service.ProductValidator;
+import java.util.List;
 
 @Controller
-@RequestMapping({"/product", ""})
+@RequestMapping("/product")
 public class ProductController {
-    private static final String PRODUCT_ATTRIBUTE_NAME = "product";
-    private final ProductService service;
-    private static final String ERROR_MESSAGE = "errorMessage";
-    private static final String PRODUCT_NOT_EXISTS = "Product doesn't exists";
 
     @Autowired
-    public ProductController(ProductService service) {
-        this.service = service;
-    }
+    private ProductService service;
 
-    @GetMapping("/")
-    public String homePage(Model model) {
-        return "index";
-    }
-
-    private static final String REDIRECT_PRODUCT_LIST = "redirect:/product/list";
     @GetMapping("/create")
     public String createProductPage(Model model) {
         Product product = new Product();
-        model.addAttribute(PRODUCT_ATTRIBUTE_NAME, product);
+        model.addAttribute("product", product);
         return "CreateProduct";
     }
 
     @PostMapping("/create")
-    public String createProduct(@RequestParam("productName") String productName,
-                                @RequestParam("productQuantity") String productQuantityStr,
-                                Model model) {
+    public String createProductPost(@RequestParam("productName") String productName, @RequestParam("productQuantity") String productQuantityRaw, Model model){
         Map<String, String> errors = new HashMap<>();
-
-        Integer quantity = parseAndValidateQuantity(productQuantityStr, errors);
-
-        if (!errors.isEmpty()) {
+        if (!ProductValidator.isQuantityInteger(productQuantityRaw)){
+            errors.put("productQuantity", "Quantity must be an integer");
+        } else {
+            int q = Integer.parseInt(productQuantityRaw.trim());
+            if (!ProductValidator.isQuantityPositive(q)){
+                errors.put("productQuantity", "Quantity must be positive");
+            }
+        }
+        if (!errors.isEmpty()){
             Product product = new Product();
             product.setProductName(productName);
-            model.addAttribute(PRODUCT_ATTRIBUTE_NAME, product);
-            model.addAttribute("productQuantityRaw", productQuantityStr);
+            model.addAttribute("product", product);
+            model.addAttribute("productQuantityRaw", productQuantityRaw);
             model.addAttribute("errors", errors);
             return "CreateProduct";
         }
-
         Product product = new Product();
         product.setProductName(productName);
-        product.setProductQuantity(quantity);
-        service.create(product);
-        return REDIRECT_PRODUCT_LIST;
-    }
-
-    @GetMapping("/edit")
-    public String editProductPage(@RequestParam("id") String id, Model model) {
-        final UUID uid;
-        try {
-            uid = UUID.fromString(id);
-        } catch (IllegalArgumentException e) {
-            return REDIRECT_PRODUCT_LIST;
-        }
-        Product product = service.findProductById(uid);
-            if (product == null) {
-                return REDIRECT_PRODUCT_LIST;
-        }
-            model.addAttribute(PRODUCT_ATTRIBUTE_NAME, product);
-        return "EditProduct";
-    }
-
-    @PostMapping("/edit")
-    public String editProduct(@RequestParam("productId") String productId,
-                              @RequestParam("productName") String productName,
-                              @RequestParam("productQuantity") String productQuantityStr,
-                              Model model) {
-        Map<String, String> errors = new HashMap<>();
-        Integer quantity = parseAndValidateQuantity(productQuantityStr, errors);
-
-        final UUID uid;
-        try {
-            uid = UUID.fromString(productId);
-        } catch (IllegalArgumentException e) {
-            return REDIRECT_PRODUCT_LIST;
-        }
-        Product existing = service.findProductById(uid);
-        if (existing == null) {
-                return REDIRECT_PRODUCT_LIST;
-        }
-
-        if (!errors.isEmpty()) {
-            Product product = new Product();
-            try {
-                product.setProductId(UUID.fromString(productId));
-            } catch (IllegalArgumentException e) {
-                product.setProductId(UUID.randomUUID());
-            }
-            product.setProductName(productName);
-            model.addAttribute(PRODUCT_ATTRIBUTE_NAME, product);
-            model.addAttribute("productQuantityRaw", productQuantityStr);
+        product.setProductQuantity(Integer.parseInt(productQuantityRaw.trim()));
+        Product created = service.create(product);
+        if (created == null) {
+            errors.put("productQuantity", "Invalid quantity");
+            model.addAttribute("product", product);
+            model.addAttribute("productQuantityRaw", productQuantityRaw);
             model.addAttribute("errors", errors);
-            return "EditProduct";
+            return "CreateProduct";
         }
-
-        existing.setProductName(productName);
-        existing.setProductQuantity(quantity);
-        service.update(existing);
-            return REDIRECT_PRODUCT_LIST;
-    }
-
-    @PostMapping("/delete")
-    public String deleteProduct(@RequestParam("id") String id, RedirectAttributes redirectAttributes) {
-        if (id == null || id.isEmpty()) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE, PRODUCT_NOT_EXISTS);
-                return REDIRECT_PRODUCT_LIST;
-        }
-        final UUID uid;
-        try {
-            uid = UUID.fromString(id);
-        } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute(ERROR_MESSAGE, PRODUCT_NOT_EXISTS);
-                return REDIRECT_PRODUCT_LIST;
-        }
-        Product deletedProduct = service.findProductById(uid);
-        if (deletedProduct != null) {
-            service.delete(deletedProduct);
-                return REDIRECT_PRODUCT_LIST;
-        }
-        redirectAttributes.addFlashAttribute(ERROR_MESSAGE, PRODUCT_NOT_EXISTS);
-            return REDIRECT_PRODUCT_LIST;
+        return "redirect:list";
     }
 
     @GetMapping("/list")
-    public String productListPage(Model model) {
+    public String productListPage(Model model){
         List<Product> allProducts = service.findAll();
         model.addAttribute("products", allProducts);
         return "ProductList";
     }
-    private Integer parseAndValidateQuantity(String productQuantityStr, Map<String, String> errors) {
-        if (!ProductValidator.isQuantityInteger(productQuantityStr)) {
+
+    @GetMapping("/edit/{productId}")
+    public String editProductPage(@PathVariable String productId, Model model) {
+        Product product = service.findById(productId);
+        model.addAttribute("product", product);
+        return "EditProduct";
+    }
+
+    @PostMapping("/edit")
+    public String editProductPost(@RequestParam("productId") String productId, @RequestParam("productName") String productName, @RequestParam("productQuantity") String productQuantityRaw, Model model) {
+        Map<String, String> errors = new HashMap<>();
+        if (!ProductValidator.isQuantityInteger(productQuantityRaw)){
             errors.put("productQuantity", "Quantity must be an integer");
-            return null;
+        } else {
+            int q = Integer.parseInt(productQuantityRaw.trim());
+            if (!ProductValidator.isQuantityPositive(q)){
+                errors.put("productQuantity", "Quantity must be positive");
+            }
         }
-        int quantity = Integer.parseInt(productQuantityStr);
-        if (!ProductValidator.isQuantityPositive(quantity)) {
-            errors.put("productQuantity", "Quantity has to be more than 0");
-            return null;
+        if (!errors.isEmpty()){
+            Product product = new Product();
+            try{ product.setProductId(UUID.fromString(productId)); } catch (IllegalArgumentException e) {}
+            product.setProductName(productName);
+            model.addAttribute("product", product);
+            model.addAttribute("productQuantityRaw", productQuantityRaw);
+            model.addAttribute("errors", errors);
+            return "EditProduct";
         }
-        return quantity;
+        Product product = new Product();
+        try{ product.setProductId(UUID.fromString(productId)); } catch (IllegalArgumentException e) { return "redirect:list"; }
+        product.setProductName(productName);
+        product.setProductQuantity(Integer.parseInt(productQuantityRaw.trim()));
+        Product updated = service.update(product.getProductId(), product);
+        if (updated == null) {
+            errors.put("productQuantity", "Invalid quantity");
+            model.addAttribute("product", product);
+            model.addAttribute("productQuantityRaw", productQuantityRaw);
+            model.addAttribute("errors", errors);
+            return "EditProduct";
+        }
+        return "redirect:list";
+    }
+
+    @PostMapping("/delete")
+    public String deleteProduct(@RequestParam("productId") String productId) {
+        if (productId == null || productId.trim().isEmpty()) return "redirect:list";
+        try {
+            UUID.fromString(productId);
+        } catch (IllegalArgumentException e) {
+            return "redirect:list";
+        }
+        service.deleteProductById(productId);
+        return "redirect:list";
+    }
+}
+
+@Controller
+@RequestMapping("/car")
+class CarController extends ProductController {
+
+    @Autowired
+    private CarServiceImpl carservice;
+
+    @GetMapping("/createCar")
+    public String createCarPage(Model model) {
+        Car car = new Car();
+        model.addAttribute("car", car);
+        return "CreateCar";
+    }
+
+    @PostMapping("/createCar")
+    public String createCarPost(@ModelAttribute Car car, Model model){
+        carservice.create(car);
+        return "redirect:listCar";
+    }
+
+    @GetMapping("/listCar")
+    public String carListPage(Model model){
+        List<Car> allCars = carservice.findAll();
+        model.addAttribute("cars", allCars);
+        return "CarList";
+    }
+
+    @GetMapping("/editCar/{carId}")
+    public String editCarPage(@PathVariable String carId, Model model) {
+        Car car = carservice.findById(carId);
+        model.addAttribute("car", car);
+        return "EditCar";
+    }
+
+    @PostMapping("/editCar")
+    public String editCarPost(@ModelAttribute Car car, Model model) {
+        carservice.update(car.getCarId(), car);
+        return "redirect:listCar";
+    }
+
+    @PostMapping("/deleteCar")
+    public String deleteCar(@RequestParam("carId") String carId) {
+        carservice.deleteCarById(carId);
+        return "redirect:listCar";
     }
 }
