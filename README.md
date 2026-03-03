@@ -71,3 +71,33 @@ The definition of Continous Deployment is automating deployment after our code h
 
 For those reasons, I believe that my implementation has met the definition of CI/CD, although there are definitely some room for improvements, for example integrating functional tests to the workflow instead of only unit tests.
 </details>
+
+<details>
+<summary> Modul 3 Maintanability and OO principles</summary>
+
+> 1. Explain what principles you apply to your project!
+   
+I applied the following principles
+1. **Single Responsibility Principle** : Refactoring the controller and splitting it into two files, 1 for handling Car and one more for Product, this way each class only handles one responsibility
+2. **Open/Closed Principle** : Adding a repository interface which uses generic types which is then implemented in each of the repository, in this case product and car. That way if we want to create a new repository we can do it without having to modify the existing code. 
+3. **Dependency Inversion Principle** : Changing the variable type of carservice in car controller from CarServiceImpl to CarService because CarController should depend on abstraction instead of implementation
+4. **Interface Segregation Principle** : Splitting up the repository interface into 2 interface where one is used for reading and one for writeing. This way, it will allow us to create a new repository that could only read/write
+5. **Liskov Substitution Principle** : The codebase has implemented Liskov Substitution Principle without needing further modification. For example any code using the RepositoryInterface can accept ProductRepository without behavioral changes.
+
+> 2.  Explain the advantages of applying SOLID principles to your project with examples.
+
+1. Increase code flexibility
+SOLID principles such as OCP and ISP help increase code flexibility. In this case, we have the flexibility to create a repository that could only read/write without having to modify any of the existing code, we just need to implement the suitable interface
+2. Increase code maintanability
+SOLID principles such as the SRP help increase code mintanability. For example a developer looking to add new endpoints/fix bugs for the car controller don't have to worry about accidentally introducing bugs to product controller. This can also help to reduce git merge conflicts in the case where 1 developer is working on car controller and another on product controller. If both controllers are implemented in the same file, there would be a lot of merge conflicts.
+3. Increase code readability
+SOLID principles help make our code more readable. For example, in this code base every classes are named appropriately and every function in each class isn't too long. Principles such as SRP allow us to know which class implements a certain functionality without even needing to read the class as each class has desccriptive names and only handles one responsibility
+
+> 3.  Explain the disadvantages of not applying SOLID principles to your project with examples.
+
+1. Harder to do code refactoring
+For example if the controllers are not split, 1 single change to the code for the controller that handles cars could effect the controller that handles product. This will increase the risk of introducing bugs in other places where it could've easily been avoided
+
+2. Harder to expand code
+Say you want to add a new repository whose sole purpose is to read data. If we do not split the repository interface then that repository would be forced to implement unnecessary functions (e.g edit,create,delete). This would make it harder to expand the functionality as we need to think of what to do with those unnecessary functions. It would also make our code harder to read as there are more functions
+</details>
