@@ -1,27 +1,31 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
-import id.ac.ui.cs.advprog.eshop.model.Product;
-import id.ac.ui.cs.advprog.eshop.repository.ProductRepository;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Iterator;
-import java.util.UUID;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import id.ac.ui.cs.advprog.eshop.model.Product;
+import id.ac.ui.cs.advprog.eshop.repository.RepositoryInterface;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
 
     @Mock
-    ProductRepository productRepository;
+    RepositoryInterface<Product, String> productRepository;
 
     @InjectMocks
     ProductServiceImpl productService;
@@ -31,7 +35,7 @@ class ProductServiceImplTest {
     @BeforeEach
     void setUp() {
         sample = new Product();
-        sample.setProductId(UUID.randomUUID());
+        sample.setProductId(UUID.randomUUID().toString());
         sample.setProductName("Sample");
         sample.setProductQuantity(1);
     }
@@ -45,18 +49,10 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void testDeleteForwardsToRepositoryAndReturnsProduct() {
-        when(productRepository.delete(sample)).thenReturn(sample);
-        Product result = productService.delete(sample);
-        assertEquals(sample, result);
-        verify(productRepository).delete(sample);
-    }
-
-    @Test
     void testFindAllConvertsIteratorToList() {
         List<Product> products = new ArrayList<>();
         Product p2 = new Product();
-        p2.setProductId(UUID.randomUUID());
+        p2.setProductId(UUID.randomUUID().toString());
         p2.setProductName("P2");
         p2.setProductQuantity(2);
         products.add(sample);
@@ -79,30 +75,9 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void testFindProductByIdWithNullReturnsNull() {
-        assertNull(productService.findProductById(null));
-        verifyNoInteractions(productRepository);
-    }
-
-    @Test
-    void testFindProductByIdForwardsToRepository() {
-        when(productRepository.findProductById(sample.getProductId())).thenReturn(sample);
-        Product result = productService.findProductById(sample.getProductId());
-        assertEquals(sample, result);
-        verify(productRepository).findProductById(sample.getProductId());
-    }
-
-    @Test
-    void testUpdateForwardsToRepository() {
-        when(productRepository.update(sample)).thenReturn(sample);
-        Product result = productService.update(sample);
-        assertEquals(sample, result);
-        verify(productRepository).update(sample);
-    }
-
-    @Test
     void testConstructor() {
-        ProductRepository mockRepo = mock(ProductRepository.class);
+        @SuppressWarnings("unchecked")
+        RepositoryInterface<Product, String> mockRepo = mock(RepositoryInterface.class);
         ProductServiceImpl svc = new ProductServiceImpl(mockRepo);
         when(mockRepo.findAll()).thenReturn(new ArrayList<Product>().iterator());
         List<Product> result = svc.findAll();

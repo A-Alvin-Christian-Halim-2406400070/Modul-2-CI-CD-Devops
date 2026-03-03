@@ -1,17 +1,18 @@
 package id.ac.ui.cs.advprog.eshop.repository;
 
-import id.ac.ui.cs.advprog.eshop.model.Product;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.UUID;
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import id.ac.ui.cs.advprog.eshop.model.Product;
 
 @Repository
-public class ProductRepository {
+public class ProductRepository implements RepositoryInterface<Product, String> {
     private List<Product> productData = new ArrayList<>();
 
+    @Override
     public Product create(Product product) {
         if (product == null) return null;
         if (product.getProductQuantity() <= 0) return null;
@@ -19,20 +20,14 @@ public class ProductRepository {
         return product;
     }
 
-    public Product delete(Product product) {
-        if (product == null || product.getProductId() == null) return null;
-        Iterator<Product> it = productData.iterator();
-        while (it.hasNext()) {
-            Product p = it.next();
-            if (p.getProductId() != null && p.getProductId().equals(product.getProductId())) {
-                it.remove();
-                return p;
-            }
-        }
-        return null;
+    @Override
+    public void delete(String id) {
+        if (id == null) return;
+        productData.removeIf(p -> p.getProductId() != null && p.getProductId().equals(id));
     }
 
-    public Product findProductById(UUID productId) {
+    @Override
+    public Product findById(String productId) {
         if (productId == null) return null;
         for (Product product : productData) {
             if (product.getProductId() != null && product.getProductId().equals(productId)) {
@@ -42,12 +37,14 @@ public class ProductRepository {
         return null;
     }
 
-    public Product update(Product product) {
-        if (product == null || product.getProductId() == null) return null;
+    @Override
+    public Product update(String id, Product product) {
+        if (product == null || id == null) return null;
         if (product.getProductQuantity() <= 0) return null;
         for (int i = 0; i < productData.size(); i++) {
             Product p = productData.get(i);
-            if (p.getProductId() != null && p.getProductId().equals(product.getProductId())) {
+            if (p.getProductId() != null && p.getProductId().equals(id)) {
+                product.setProductId(id);
                 productData.set(i, product);
                 return product;
             }
@@ -55,6 +52,7 @@ public class ProductRepository {
         return null;
     }
 
+    @Override
     public Iterator<Product> findAll() {
         return productData.iterator();
     }
